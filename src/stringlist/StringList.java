@@ -3,7 +3,7 @@ package stringlist;
 public interface StringList {
 
         String add(String item);
-//      String add(int index, String item);
+        String add(int index, String item);
         String set(int index, String item);
         String remove(String item);
         String remove(int index);
@@ -11,8 +11,9 @@ public interface StringList {
         int indexOf(String item);
         int lastIndexOf(String item);
         String get(int index);
-        boolean equals(StringList otherList);
-        int size();
+//      boolean equals(StringList otherList);
+        int getSize();
+
         boolean isEmpty();
         void clear();
         String[] toArray();

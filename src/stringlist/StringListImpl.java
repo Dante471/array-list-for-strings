@@ -5,33 +5,41 @@ import exception.ItemNotFoundException;
 import exception.NullParameterException;
 
 import java.util.Arrays;
+import java.util.Objects;
 
 public class StringListImpl implements StringList {
     private String[] stringList;
+    private int size;
 
     public StringListImpl() {
-        this.stringList = new String[1];
+        this.stringList = new String[10];
     }
 
 
     @Override
     public String add(String item) {
-        if (stringList.length == 1 && stringList[0] == null) {
-            stringList[0] = item;
-        } else {
-            stringList = Arrays.copyOf(stringList, stringList.length + 1);
-            stringList[stringList.length - 1] = item;
+        if (size >= stringList.length) {
+            stringList = Arrays.copyOf(stringList, (int) (stringList.length + (stringList.length * 0.5)));
         }
+        stringList[size++] = item;
         return item;
     }
 
-//    @Override
-//    public String add(int index, String item) {
-//    }
+   @Override
+   public String add(int index, String item) {
+       if (index < size || index < stringList.length) {
+           String tmp = stringList[index];
+           stringList[size] = tmp;
+           stringList[index] = item;
+           size++;
+           return item;
+       }
+       throw new InvalidIndexException();
+   }
 
     @Override
     public String set(int index, String item) {
-        if (index <= stringList.length && index >= 0) {
+        if (index <= size && index >= 0) {
             stringList[index] = item;
             return item;
         }
@@ -44,9 +52,10 @@ public class StringListImpl implements StringList {
             if (stringList[i].equals(item)) {
                 stringList[i] = null;
                 if (i != stringList.length - 1) {
-                    System.arraycopy(stringList, i + 1, stringList, i, stringList.length - i - 1);
-                    return item;
+                    System.arraycopy(stringList, i + 1, stringList, i, size - i);
                 }
+                size--;
+                return item;
             }
         }
         throw new ItemNotFoundException();
@@ -58,6 +67,7 @@ public class StringListImpl implements StringList {
         stringList[index] = null;
         if (index != stringList.length - 1) {
             System.arraycopy(stringList, index + 1, stringList, index, stringList.length - index - 1);
+            size--;
             return itemToRemove;
         }
         throw new InvalidIndexException();
@@ -65,7 +75,7 @@ public class StringListImpl implements StringList {
 
     @Override
     public boolean contains(String item) {
-        for (int i = 0; i < stringList.length; i++) {
+        for (int i = 0; i < size; i++) {
             if (stringList[i].equals(item)) {
                     return true;
                 }
@@ -75,7 +85,7 @@ public class StringListImpl implements StringList {
 
     @Override
     public int indexOf(String item) {
-        for (int i = 0; i < stringList.length; i++) {
+        for (int i = 0; i < size; i++) {
             if (stringList[i].equals(item)) {
                 return i;
             }
@@ -85,7 +95,7 @@ public class StringListImpl implements StringList {
 
     @Override
     public int lastIndexOf(String item) {
-        for (int i = stringList.length - 1; i >= 0; i--) {
+        for (int i = size - 1; i >= 0; i--) {
             if (stringList[i].equals(item)) {
                 return i;
             }
@@ -95,27 +105,16 @@ public class StringListImpl implements StringList {
 
     @Override
     public String get(int index) {
-        if (index <= stringList.length && index >= 0) {
+        if (index <= size && index >= 0) {
             return stringList[index];
         }
         throw new InvalidIndexException();
     }
 
-    @Override
-    public boolean equals(StringList otherList) {
-        if (otherList != null) {
-            if (stringList.equals(otherList)) {
-                return true;
-            } else {
-                return false;
-            }
-        }
-        throw new NullParameterException();
-    }
 
     @Override
-    public int size() {
-        return stringList.length;
+    public int getSize() {
+        return size;
     }
 
     @Override
@@ -128,13 +127,29 @@ public class StringListImpl implements StringList {
 
     @Override
     public void clear() {
-        stringList = new String[1];
+        stringList = new String[10];
+        size = 0;
     }
 
     @Override
     public String[] toArray() {
-        String[] clone = stringList.clone();
-        return clone;
+        String[] arr = new String[size];
+        System.arraycopy(stringList, 0, arr, 0, size);
+        return arr;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof StringListImpl)) return false;
+        StringListImpl that = (StringListImpl) o;
+        return size == that.size && Arrays.equals(stringList, that.stringList);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = Objects.hash(size);
+        result = 31 * result + Arrays.hashCode(stringList);
+        return result;
+    }
 }
