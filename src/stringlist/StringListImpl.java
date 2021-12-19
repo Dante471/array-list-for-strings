@@ -27,9 +27,8 @@ public class StringListImpl implements StringList {
 
    @Override
    public String add(int index, String item) {
-       if (index < size || index < stringList.length) {
-           String tmp = stringList[index];
-           stringList[size] = tmp;
+       if (index <= size - 1 && index >= 0) {
+           System.arraycopy(stringList, index, stringList, index + 1, size - index);
            stringList[index] = item;
            size++;
            return item;
@@ -39,7 +38,7 @@ public class StringListImpl implements StringList {
 
     @Override
     public String set(int index, String item) {
-        if (index <= size && index >= 0) {
+        if (index <= size - 1 && index >= 0) {
             stringList[index] = item;
             return item;
         }
@@ -66,7 +65,7 @@ public class StringListImpl implements StringList {
         String itemToRemove = stringList[index];
         stringList[index] = null;
         if (index != stringList.length - 1) {
-            System.arraycopy(stringList, index + 1, stringList, index, stringList.length - index - 1);
+            System.arraycopy(stringList, index + 1, stringList, index, size - index);
             size--;
             return itemToRemove;
         }
