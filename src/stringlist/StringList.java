@@ -11,9 +11,8 @@ public interface StringList {
         int indexOf(String item);
         int lastIndexOf(String item);
         String get(int index);
-//      boolean equals(StringList otherList);
+        boolean equals(StringList otherList);
         int getSize();
-
         boolean isEmpty();
         void clear();
         String[] toArray();
